@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Design Project</title>
+    <!-- <link rel = "stylesheet" type="text/css" href = "styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="https://www.chartjs.org/samples/2.9.4/utils.js"></script>
+    <script src="script.js"> </script> -->
+  </head>
+  <body>
+
+
+    <script>
+        let d=1;
+        async function funct() { 
+        if(d<=5){
+        let  name= String.fromCharCode('0'.charCodeAt() + d);
+        name=name+'.csv';
+        console.log(name);
+        d++;
+        const response = await fetch(name);
+        const data = await response.text();
+        console.log(data);
+        const day = [];
+        const temps = [];
+        const rows = data.split('\n').slice(1);
+        const cols=rows[0].split(',');
+        const time=cols[0].split(' ');
+        day.push(time[0]);
+        temps.push(parseFloat(cols[1]));
+        console.log(day[0]);
+        console.log(temps[0]);
+        }
+      }
+      if(d<=5) setInterval(funct,1000);
+      
+      
+      
+      
+    </script>
+  </body>
+</html>

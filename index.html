@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Design Project</title>
+    <link rel = "stylesheet" type="text/css" href = "styles.css">
+
+    <script language="JavaScript" type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="https://www.chartjs.org/samples/2.9.4/utils.js"></script>
+    <script src="script.js"> </script>
+
+
+  </head>
+  <body>
+    <!-- <canvas id="myChart" width="1800" height="900"></canvas> -->
+    <div id="clock">
+      <span id="hours"></span>
+      <span id="minutes"></span>
+      <span id="seconds"></span>
+    </div>
+      <style>
+        #middlebox{
+            float:left;
+            width:50%;
+            height:450px;
+            align-items: left;
+        }
+        #rightbox{
+            float:right;
+            width:50%;
+            height:450px;
+            align-items: left;
+        }
+        #bottom_left{
+            float:left;
+            width:50%;
+            height:450px;
+            align-items: left;
+        }
+    </style>
+    <div id="middlebox" >
+      <canvas id="myChart" width="800" height="400"></canvas> 
+      </div>
+      <div id="rightbox">
+        <canvas id="myyChart" width="800" height="400"></canvas> 
+    </div>
+    <div id="bottom_left">
+      <canvas id="barchart" width="800" height="400"></canvas> 
+    </div>
+    <script>
+      // Bar chart
+      let st=5;
+      // window.addEventListener('load', setup);
+      setup();
+       setup1();
+      // setup2();
+
+      // code for the file name vagaire
+      const files_to_be_opened= ["1","2"];
+      let cur_name="2";
+      function updateStart(){
+        st+=5;
+      }
+      setInterval(updateStart,1000);
+      //  setInterval(setup1,1500);
+
+      // 
+
+
+      async function setup() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const globalTemps = await getData();
+        const myChart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: ['O3','NO','NOx','NO2','SO2'],
+            datasets: [
+              {
+                label: 'Conc',
+                data: globalTemps.temps,
+                fill: false,
+                // backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"]
+                backgroundColor: ['#FF6384 ','#36A2EB ','#FFCE56 ','#4BC0C0 ','#9966FF','#FF9F40']
+              }
+
+            ]
+          },
+          options: {responsive: false,
+            layout: {
+            padding: {
+                left: 100
+            }
+        },   title:{
+          display : true,
+          text : 'Air Composition Data ',
+          fontSize: 20
+        }
+          }
+        });
+      }
+      // 
+      
+      // 
+
+
+       async function setup1() { 
+        const ctx = document.getElementById('myyChart').getContext('2d');
+        const globalTemps = await getData1();
+        console.log(st);
+        const myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: globalTemps.day,
+            datasets: [
+              {
+                label: 'Temperature in °C',
+                data: globalTemps.temps,
+                fill: true,
+                // borderColor: 'rgba(255, 99, 132, 1)',
+                // backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                // borderWidth: 1
+                borderColor: "#ff33ff",
+                // backgroundColor: "transparent",
+                tension: 0
+              }
+            ]
+          },
+          options: {responsive: false,
+            layout: {
+            padding: {
+                left: 100
+            }
+        },
+          scales: {
+          y: {
+            suggestedMin: 18,
+            suggestedMax: 26,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        },
+        animation: {
+          tension: {
+            duration: 1000,
+            easing: "linear",
+            from: 0.4,
+            to: 0
+          }
+        },
+        title:{
+          display: true,
+          text: 'Temperature Data',
+          fontSize: 20
+        }
+          }
+        });
+       }
+
+      async function setup2() {
+        const ctx = document.getElementById('barchart').getContext('2d');
+        const globalTemps = await getData2();
+        const myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: globalTemps.day,
+            datasets: [
+              {
+                label: 'WNGS',
+                data: globalTemps.temps,
+                fill: false,
+                borderColor: '#D85C42',
+                backgroundColor: 	'#D85C42',
+                tension : 0
+              },
+              {
+                label: 'Dew',
+                data: globalTemps.temps1,
+                fill: false,
+                borderColor: '#2FC6E8',
+                backgroundColor: '#2FC6E8',
+                tension : 0
+              },
+              {
+                label: 'WNS',
+                data: globalTemps.temps2,
+                fill: false,
+                borderColor: '#53E92E',
+                backgroundColor: '#53E92E',
+                tension : 0
+              }
+
+
+            ]
+          },
+          options: {responsive: false,
+            layout: {
+            padding: {
+                left: 100
+            }
+        },   title:{
+          display : true,
+          text : 'Weather_Data ',
+          fontSize: 20
+
+        }
+          }
+        });
+      }
+
+      async function getData() {
+        const response = await fetch('data.csv');
+        const data = await response.text();
+        const day = [];
+        const temps = [];
+        const rows = data.split('\n').slice(1);
+        let len=rows.length;
+        for(let i=0;i<1;i++){
+          const cols=rows[i].split(',');
+          day.push(cols[0]);
+          temps.push(parseFloat(cols[1]));
+          temps.push(parseFloat(cols[3]));
+          temps.push(parseFloat(cols[5]));
+          temps.push(parseFloat(cols[7]));
+          temps.push(parseFloat(cols[9]));
+        }
+        return { day, temps};
+      }
+      // testing 
+      async function getData1() {
+        const response = await fetch('tempdata.csv');
+        const data = await response.text();
+        const day = [];
+        const temps = [];
+        const rows = data.split('\n').slice(1);
+        let len=rows.length;
+        console.log(rows[0]);
+        for(let i=3;i<20;i++){
+          const cols=rows[i].split(',');
+          const time=cols[0].split(' ');
+          day.push(time[1]);
+          temps.push(parseFloat(cols[4]));
+        }
+        return { day, temps};
+      }
+      async function getData2() { 
+        const response = await fetch('tempdata.csv');
+        const data = await response.text();
+        const day = [];
+        const temps = [];
+        const rows = data.split('\n').slice(1);
+        const cols=rows[0].split(',');
+        const time=cols[0].split(' ');
+        day.push(time[0]);
+        temps.push(parseFloat(cols[1]));
+        console.log(day[0]);
+        console.log(temps[0]);
+      }
+      
+      
+
+      function Time() {
+
+ // Creating object of the Date class
+ var date = new Date();
+
+// Get current hour
+ var hour = date.getHours();
+ // Get current minute
+ var minute = date.getMinutes();
+ // Get current second
+ var second = date.getSeconds();
+
+ // Variable to store AM / PM
+ var period = "";
+
+ // Assigning AM / PM according to the current hour
+ if (hour >= 12) {
+ period = "PM";
+ } else {
+ period = "AM";
+ }
+
+ // Converting the hour in 12-hour format
+ if (hour == 0) {
+ hour = 12;
+ } else {
+ if (hour > 12) {
+ hour = hour - 12;
+ }
+ }
+
+ // Updating hour, minute, and second
+ // if they are less than 10
+ hour = update(hour);
+ minute = update(minute);
+ second = update(second);
+
+ // Adding time elements to the div
+ document.getElementById("digital-clock").innerText = hour + " : " + minute + " : " + second + " " + period;
+
+ // Set Timer to 1 sec (1000 ms)
+ setTimeout(Time, 1000);
+}
+
+ // Function to update time elements if they are less than 10
+ // Append 0 before time elements if they are less than 10
+function update(t) {
+ if (t < 10) {
+ return "0" + t;
+ }
+ else {
+ return t;
+ }
+}
+
+Time();
+      
+      
+      
+      
+      
+    </script>
+  </body>
+</html>
